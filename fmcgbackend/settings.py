@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    'users.apps.UsersConfig',
+    'user.apps.UserConfig',
+    'distributor.apps.DistributorConfig',
+    'retailer.apps.RetailerConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +135,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+
+AUTH_USER_MODEL = "user.UserAccount"
