@@ -78,3 +78,32 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         if not self.type or self.type == None :  
             self.type = UserAccount.Types.RETAILER 
         return super().save(*args , **kwargs)
+    
+
+class Notification(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    title = models.TextField()
+    day = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.message)
+    
+    class Meta:
+        ordering = ['-day']
+        
+
+class Route(models.Model):
+    routeName= models.CharField(max_length=255)
+    text= models.TextField()
+    source= models.CharField(max_length=255)
+    destination= models.CharField(max_length=255) 
+    
+    
+class Product(models.Model):
+    name = models.CharField(max_length=255),
+    category = models.CharField(max_length=255),
+    brand = models.CharField(max_length=255),
+    demand = models.IntegerField(),
+    priority = models.IntegerField(),
+    
+    
