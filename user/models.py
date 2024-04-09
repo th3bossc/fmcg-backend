@@ -82,11 +82,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
 class Notification(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    title = models.TextField()
-    day = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return str(self.message)
+    title = models.CharField(max_length=255)
+    day = models.DateTimeField()
     
     class Meta:
         ordering = ['-day']
@@ -96,14 +93,20 @@ class Route(models.Model):
     routeName= models.CharField(max_length=255)
     text= models.TextField()
     source= models.CharField(max_length=255)
-    destination= models.CharField(max_length=255) 
+    destination= models.CharField(max_length=255)
+    
+    
+    @property
+    def location(self):
+        return f"{self.source} -> {self.destination}" 
     
     
 class Product(models.Model):
-    name = models.CharField(max_length=255),
-    category = models.CharField(max_length=255),
-    brand = models.CharField(max_length=255),
-    demand = models.IntegerField(),
-    priority = models.IntegerField(),
+    name = models.CharField(max_length=255)
+    category = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255)
+    demand = models.IntegerField()
+    priority = models.IntegerField()
+    
     
     

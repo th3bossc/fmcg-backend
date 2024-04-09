@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import UserAccount
-
+from distributor.models import Distributor
 class RetailerManager(models.Manager): 
     def create_user(self, email, name, contact, address, password, **other_fields): 
         if not email or len(email) <= 0:  
@@ -35,3 +35,16 @@ class Retailer(UserAccount):
             self.type = UserAccount.Types.RETAILER 
         self.is_retailer = True
         return super().save(*args , **kwargs)
+    
+    
+class Orders(models.Model):
+    status_choices = (
+        ('PENDING', 'PENDING'),
+        ('ACCEPTED' , 'ACCEPTED'),
+        ('REJECTED' , 'REJECTED'),
+    )
+    retailer = models.ForeignKey(Retailer , on_delete = models.CASCADE) 
+    product = models.ForeignKey('user.Product' , on_delete = models.CASCADE)
+    status = models.CharField(choices = status_choices , default = 'PENDING', max_length=9)
+    required = models.IntegerField(default = 0)
+    route = models.ForeignKey('user.Route' , on_delete = models.CASCADE)

@@ -1,7 +1,7 @@
 from django.db import models
-from user.models import UserAccount
+from user.models import UserAccount, UserAccountManager
 
-class DistributorManager(models.Manager): 
+class DistributorManager(UserAccountManager): 
     def create_user(self, email, name, contact, address, password, **other_fields): 
         if not email or len(email) <= 0:  
             raise  ValueError("Email field is required !") 
@@ -28,10 +28,36 @@ class DistributorManager(models.Manager):
 class Distributor(UserAccount): 
     class Meta :  
         proxy = True
-    objects = DistributorManager() 
+    objects = DistributorManager()
       
     def save(self , *args , **kwargs):
         if not self.id or self.id == None: 
             self.type = UserAccount.Types.DISTRIBUTOR 
         self.is_distributor = True
         return super().save(*args , **kwargs)
+    
+    
+class OrdersAccepted(models.Model):
+    distributor = models.ForeignKey(Distributor , on_delete = models.CASCADE)
+    order = models.ForeignKey('retailer.Orders' , on_delete = models.CASCADE)
+    accepted = models.BooleanField(default = False)
+    
+    def accept(self, *args, **kwargs):
+        self.order.status = 'ACCEPTED'
+        self.order.save()
+        self.accepted = True
+        return super().save(*args, **kwargs)
+    
+    def reject(self, *args, **kwargs):
+        self.order.status = 'REJECTED'
+        self.order.save()
+        self.accepted = False
+        return super().save(*args, **kwargs)
+    
+    def save(self, *args, **kwargs):
+        if (self.accepted):
+            self.order.status = 'ACCEPTED'
+        else:
+            self.order.status = 'REJECTED'
+        self.order.save()
+        return super().save(*args, **kwargs)
