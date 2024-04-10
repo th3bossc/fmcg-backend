@@ -6,7 +6,7 @@ from user.serializers import ProductSerializer, ProfileSerializer
         
     
 class OrdersAcceptedSerializer(ModelSerializer):
-    product = CharField(source = 'order.product')
+    product = SerializerMethodField()
     retailer = SerializerMethodField()
     class Meta:
         model = OrdersAccepted
@@ -14,6 +14,9 @@ class OrdersAcceptedSerializer(ModelSerializer):
         
     def get_retailer(self, obj):
         return ProfileSerializer(obj.order.retailer).data
+    
+    def get_product(self, obj):
+        return ProductSerializer(obj.order.product).data
     
 class DemandSerializer(ModelSerializer):
     product = SerializerMethodField()

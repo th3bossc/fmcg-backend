@@ -9,7 +9,7 @@ class OrdersSerializer(ModelSerializer):
     location = CharField(source = 'route.location')
     class Meta:
         model = Orders
-        fields = ['id', 'status', 'required', 'location', 'accepted_by']
+        fields = ['id', 'status', 'product', 'required', 'location', 'accepted_by']
         
     def get_accepted_by(self, obj):
         if (obj.status == 'ACCEPTED' or obj.status == 'REJECTED'):

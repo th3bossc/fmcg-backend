@@ -12,6 +12,27 @@ class RetailerView(APIView):
         retailers = Retailer.objects.all()
         serialized_retailers = ProfileSerializer(retailers, many=True)
         return Response(serialized_retailers.data)
+    
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        name = request.data.get('name')
+        contact = request.data.get('contact')
+        address = request.data.get('address') or "Address not provided"
+        
+        if not email or not password or not name or not contact:
+            raise NotFound(detail="Please provide all required fields")
+        
+        try:
+            retailer = Retailer.objects.create(email=email, name=name, contact=contact, address=address)
+            retailer.set_password(password)
+            retailer.save()
+            serialized_retailer = ProfileSerializer(retailer)
+            return Response(serialized_retailer.data)
+        except Exception as e:
+            raise NotFound(detail="Retailer not created")
+        
+        
 
 
 class RetailerDetailView(APIView):
