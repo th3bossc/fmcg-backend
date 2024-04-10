@@ -5,6 +5,8 @@ from .models import Retailer, Orders
 from .serializers import OrdersSerializer
 from user.serializers import ProfileSerializer
 from rest_framework.exceptions import NotFound
+from distributor.models import OrdersAccepted
+from distributor.serializers import OrdersAcceptedSerializer
 
 class RetailerView(APIView):
     permission_classes = [AllowAny]
@@ -58,3 +60,17 @@ class RetailerOrdersView(APIView):
         except Exception as e:
             print(e)
             raise NotFound(detail="User not found")
+        
+        
+class RetailerReceiptsView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        retailer = request.user
+        if retailer.type != 'RETAILER':
+            raise NotFound("User is not a retailer")
+        try:
+            orders = OrdersAccepted.objects.filter(order__retailer=retailer)
+            serialized_orders = OrdersAcceptedSerializer(orders, many=True)
+            return Response(serialized_orders.data)
+        except Exception as e:
+            raise NotFound("User not found")    

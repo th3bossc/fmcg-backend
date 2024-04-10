@@ -7,9 +7,10 @@ from user.serializers import ProfileSerializer
 class OrdersSerializer(ModelSerializer):
     accepted_by = SerializerMethodField()
     location = CharField(source = 'route.location')
+    retailer = SerializerMethodField()
     class Meta:
         model = Orders
-        fields = ['id', 'status', 'product', 'required', 'location', 'accepted_by']
+        fields = ['id', 'status', 'product', 'retailer', 'required', 'location', 'accepted_by']
         
     def get_accepted_by(self, obj):
         if (obj.status == 'ACCEPTED' or obj.status == 'REJECTED'):
@@ -17,3 +18,6 @@ class OrdersSerializer(ModelSerializer):
             if order:
                 return ProfileSerializer(order.distributor).data
         return None
+    
+    def get_retailer(self, obj):
+        return ProfileSerializer(obj.retailer).data

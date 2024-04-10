@@ -18,7 +18,7 @@ class NotificationsSerializer(ModelSerializer):
 class RoutesSerializer(ModelSerializer):
     class Meta:
         model = Route
-        fields = ['id', 'routeName', 'text', 'source', 'destination'] 
+        fields = ['id', 'routeName', 'text', 'source', 'destination', 'location'] 
         
 class ProductSerializer(ModelSerializer):
     class Meta:

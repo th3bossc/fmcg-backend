@@ -59,3 +59,33 @@ class DistributorDemandView(APIView):
         orders = Orders.objects.filter(status="PENDING")
         serialized_orders = DemandSerializer(orders, many=True)
         return Response(serialized_orders.data)
+    
+
+class AcceptHandler(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk):
+        distributor = request.user
+        if distributor.type != 'DISTRIBUTOR':
+            raise NotFound("User is not a distributor")
+        try:
+            order = Orders.objects.get(id=pk)
+            newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=True)
+            newOrder.save()
+            return Response({"message": "Order accepted"})
+        except Exception as e:
+            raise NotFound("Order not found")
+        
+        
+class RejectHandler(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk):
+        distributor = request.user
+        if distributor.type != 'DISTRIBUTOR':
+            raise NotFound("User is not a distributor")
+        try:
+            order = Orders.objects.get(id=pk)
+            newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=False)
+            newOrder.save()
+            return Response({"message": "Order rejected"})
+        except Exception as e:
+            raise NotFound("Order not found")
