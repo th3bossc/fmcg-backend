@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
-
+X_FRAME_OPTIONS = '*'
 
 # Application definition
 
