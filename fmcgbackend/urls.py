@@ -29,4 +29,4 @@ urlpatterns = [
     path('api/', include('user.urls')),
     path('api/retailers/', include('retailer.urls')),
     path('api/distributors/', include('distributor.urls')),
-] + static(MEDIA_URL, document_root=MEDIA_ROOT)
+]
