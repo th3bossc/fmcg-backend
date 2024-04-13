@@ -32,6 +32,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 X_FRAME_OPTIONS = '*'
+CSRF_TRUSTED_ORIGINS = ['https://fmcgbackend.azurewebsites.net']
 
 # Application definition
 
