@@ -36,3 +36,11 @@ class ProductsView(APIView):
         serialized_products = ProductSerializer(products, many=True)
         return Response(serialized_products.data)
     
+    
+    def post(self, request):
+        product = ProductSerializer(data=request.data)
+        if product.is_valid():
+            product.save()
+            return Response(product.data)
+        return Response(product.errors)
+    
