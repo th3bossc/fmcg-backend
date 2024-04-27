@@ -4,9 +4,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Retailer, Orders
 from .serializers import OrdersSerializer
 from user.serializers import ProfileSerializer
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, bad_request
 from distributor.models import OrdersAccepted
 from distributor.serializers import OrdersAcceptedSerializer
+from user.models import Product, Route
 
 class RetailerView(APIView):
     permission_classes = [AllowAny]
@@ -60,6 +61,32 @@ class RetailerOrdersView(APIView):
         except Exception as e:
             print(e)
             raise NotFound(detail="User not found")
+        
+        
+    def post(self, request):
+        if (request.user.type != 'RETAILER'):
+            raise NotFound(detail="User is not a retailer")
+        if not request.data['product'] or not request.data['route'] or not request.data['required']:
+            raise bad_request(detail="Please provide all required fields")
+        product = Product.objects.get(pk=request.data.get('product'))
+        route = Route.objects.get(pk=request.data.get('route'))
+        order = Orders.objects.filter(
+            retailer=request.user,
+            route=route,
+            product=product,
+            status='PENDING'
+        ).first()
+        if order:
+            order.required += request.data.get('required')
+        else:
+            order = Orders.objects.create(
+                retailer=request.user,
+                product=product,
+                required=request.data.get('required'),
+                route=route
+            )
+        order.save()
+        return Response(OrdersSerializer(Orders.objects.filter(retailer=request.user), many=True).data)
         
         
 class RetailerReceiptsView(APIView):

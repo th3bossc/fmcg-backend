@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from .serializers import OrdersAcceptedSerializer, DemandSerializer
 from user.serializers import ProfileSerializer
 from rest_framework.exceptions import NotFound
+from datetime import datetime, timedelta
+from user.models import Notification
 
 class DistributorView(APIView):
     def get(self, _):
@@ -60,6 +62,23 @@ class DistributorDemandView(APIView):
         serialized_orders = DemandSerializer(orders, many=True)
         return Response(serialized_orders.data)
     
+    
+    def post(self, request):
+        if (request.user.type != 'DISTRIBUTOR'):
+            raise NotFound("User is not a distributor")
+        route = request.data.get('route')
+        product = request.data.get('product')
+        
+        orders = OrdersAccepted.objects.filter(order__route=route, order__product=product, accepted=True, distributor=request.user)
+        analysis_data = {
+            "totalDemand": sum([order.order.required for order in orders]),
+            "totalOrders": len(orders),
+            "totalPrice": sum([order.order.product.price for order in orders]),
+            "cost": orders[0].order.route.cost if len(orders) else 0,
+        }
+        
+        return Response(analysis_data)  
+    
 
 class AcceptHandler(APIView):
     permission_classes = [IsAuthenticated]
@@ -69,8 +88,15 @@ class AcceptHandler(APIView):
             raise NotFound("User is not a distributor")
         try:
             order = Orders.objects.get(id=pk)
-            newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=True)
+            days = request.data.get('days')
+            expectedDelivery = datetime.now() + timedelta(days=days)
+            newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=True, expectedDeliveryTime=expectedDelivery)
             newOrder.save()
+            
+            orderedBy = order.retailer
+            Notification.objects.create(user=orderedBy, message=f"Your order has been accepted by {distributor.name}")
+            Notification.objects.create(user=orderedBy, message=f"Lead time for delivery is {days} days")
+            
             return Response({"message": "Order accepted"})
         except Exception as e:
             raise NotFound("Order not found")
@@ -86,6 +112,9 @@ class RejectHandler(APIView):
             order = Orders.objects.get(id=pk)
             newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=False)
             newOrder.save()
+            retailer = order.retailer
+            Notification.objects.create(user=retailer, message=f"Your order has been rejected by {distributor.name}")
+            
             return Response({"message": "Order rejected"})
         except Exception as e:
             raise NotFound("Order not found")

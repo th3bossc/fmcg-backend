@@ -41,6 +41,9 @@ class OrdersAccepted(models.Model):
     distributor = models.ForeignKey(Distributor , on_delete = models.CASCADE)
     order = models.ForeignKey('retailer.Orders' , on_delete = models.CASCADE)
     accepted = models.BooleanField(default = False)
+    acceptedTime = models.DateTimeField(auto_now_add = True, null=True, blank=True)
+    expectedDeliveryTime = models.DateTimeField(null=True, blank=True)
+    
     
     def accept(self, *args, **kwargs):
         self.order.status = 'ACCEPTED'

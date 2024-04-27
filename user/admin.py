@@ -31,19 +31,19 @@ class NotificationAdmin(ModelAdmin):
     list_filter = ('user', 'day')
     
 class RouteAdmin(ModelAdmin):
-    list_display = ('routeName', 'text', 'source', 'destination')
-    search_fields = ('routeName', 'text', 'source', 'destination')
+    list_display = ('routeName', 'text', 'source', 'destination', 'cost')
+    search_fields = ('routeName', 'text', 'source', 'destination', 'cost')
     fieldsets = (
-        (None, {'fields': ('routeName', 'text', 'source', 'destination')}),
+        (None, {'fields': ('routeName', 'text', 'source', 'destination', 'cost')}),
     )
     list_filter = ('source', 'destination')
     
     
 class ProductAdmin(ModelAdmin):
-    list_display = ('name', 'category', 'brand', 'demand', 'priority')
-    search_fields = ('name', 'category', 'brand', 'demand', 'priority')
+    list_display = ('name', 'category', 'brand', 'demand', 'priority', 'price')
+    search_fields = ('name', 'category', 'brand', 'demand', 'priority', 'price')
     fieldsets = (
-        (None, {'fields': ('name', 'category', 'brand', 'demand', 'priority')}),
+        (None, {'fields': ('name', 'category', 'brand', 'demand', 'priority', 'price')}),
     )
     list_filter = ()
 

@@ -90,10 +90,11 @@ class Notification(models.Model):
         
 
 class Route(models.Model):
-    routeName= models.CharField(max_length=255)
-    text= models.TextField()
-    source= models.CharField(max_length=255)
-    destination= models.CharField(max_length=255)
+    routeName=models.CharField(max_length=255)
+    text=models.TextField()
+    source=models.CharField(max_length=255)
+    destination=models.CharField(max_length=255)
+    cost=models.FloatField(default=30.0)
     
     
     @property
@@ -107,6 +108,7 @@ class Product(models.Model):
     brand = models.CharField(max_length=255)
     demand = models.IntegerField()
     priority = models.IntegerField()
+    price = models.FloatField(default=20.0)
     
     
     
