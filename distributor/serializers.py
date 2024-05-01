@@ -10,7 +10,7 @@ class OrdersAcceptedSerializer(ModelSerializer):
     retailer = SerializerMethodField()
     class Meta:
         model = OrdersAccepted
-        fields = ['id', 'product', 'retailer', 'accepted']
+        fields = ['id', 'product', 'retailer', 'accepted', 'expectedDeliveryTime']
         
     def get_retailer(self, obj):
         return ProfileSerializer(obj.order.retailer).data

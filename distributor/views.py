@@ -79,9 +79,21 @@ class DistributorDemandView(APIView):
         
         return Response(analysis_data)  
     
+class AcceptedOrders(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        retailer = request.user
+        if retailer.type != 'RETAILER':
+            raise NotFound("User is not a retailer")
+        
+        orders = OrdersAccepted.objects.filter(order__retailer=retailer, accepted=True)
+        serialized_orders = OrdersAcceptedSerializer(orders, many=True)
+        return Response(serialized_orders.data)
 
 class AcceptHandler(APIView):
     permission_classes = [IsAuthenticated]
+    
     def put(self, request, pk):
         distributor = request.user
         if distributor.type != 'DISTRIBUTOR':
