@@ -1,13 +1,14 @@
 from rest_framework.serializers import ModelSerializer, CharField, SerializerMethodField
 from .models import Retailer, Orders
 from distributor.models import Distributor, OrdersAccepted
-from user.serializers import ProfileSerializer
+from user.serializers import ProfileSerializer, ProductSerializer
 
 
 class OrdersSerializer(ModelSerializer):
     accepted_by = SerializerMethodField()
     location = CharField(source = 'route.location')
     retailer = SerializerMethodField()
+    product = SerializerMethodField()
     class Meta:
         model = Orders
         fields = ['id', 'status', 'product', 'retailer', 'required', 'location', 'accepted_by']
@@ -21,3 +22,6 @@ class OrdersSerializer(ModelSerializer):
     
     def get_retailer(self, obj):
         return ProfileSerializer(obj.retailer).data
+    
+    def get_product(self, obj):
+        return ProductSerializer(obj.product).data

@@ -21,13 +21,12 @@ class DistributorView(APIView):
         password = request.data.get('password')
         name = request.data.get('name')
         contact = request.data.get('contact')
-        address = request.data.get('address') or "Address not provided"
         
         if not email or not password or not name or not contact:
             raise NotFound("Please provide all required fields")
         
         try:
-            distributor = Distributor.objects.create(email=email, name=name, contact=contact, address=address)
+            distributor = Distributor.objects.create(email=email, name=name, contact=contact, location=None)
             distributor.set_password(password)
             distributor.save()
             serialized_distributor = ProfileSerializer(distributor)

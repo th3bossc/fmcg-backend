@@ -1,11 +1,16 @@
-from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.serializers import ModelSerializer, CharField, SerializerMethodField
 from .models import UserAccount, Notification, Route, Product
 
 class ProfileSerializer(ModelSerializer):
     role = CharField(source = 'type')
+    address = SerializerMethodField()
     class Meta:
         model = UserAccount
         fields = ['id', 'email', 'name', 'role', 'contact', 'address']
+        
+        
+    def get_address(self, obj):
+        return obj.location.destination
         
         
         
@@ -23,4 +28,4 @@ class RoutesSerializer(ModelSerializer):
 class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'brand', 'demand', 'priority']
+        fields = ['id', 'name', 'category', 'brand', 'demand', 'priority', 'price']

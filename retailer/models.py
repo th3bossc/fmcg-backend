@@ -1,8 +1,7 @@
 from django.db import models
-from user.models import UserAccount
-from distributor.models import Distributor
+from user.models import UserAccount, Route
 class RetailerManager(models.Manager): 
-    def create_user(self, email, name, contact, address, password, **other_fields): 
+    def create_user(self, email, name, contact, password, **other_fields): 
         if not email or len(email) <= 0:  
             raise  ValueError("Email field is required !") 
         if not password : 
@@ -12,7 +11,6 @@ class RetailerManager(models.Manager):
             email = self.normalize_email(email),
             name = name,
             contact = contact,
-            address = address,
             **other_fields  
         ) 
         user.set_password(password) 
@@ -26,6 +24,7 @@ class RetailerManager(models.Manager):
         return queryset  
         
 class Retailer(UserAccount): 
+    
     class Meta :  
         proxy = True
     objects = RetailerManager() 

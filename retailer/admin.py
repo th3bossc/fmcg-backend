@@ -8,18 +8,18 @@ from django.contrib.admin import ModelAdmin
 
 class UserAdminConfig(UserAdmin):
     model = Retailer
-    search_fields = ('email', 'name', 'contact')
-    list_filter = ('email', 'contact', 'is_active', 'is_staff', 'type')
-    list_display = ('email', 'name', 'contact', 'is_active', 'is_staff')
+    search_fields = ('email', 'name', 'contact', 'location')
+    list_filter = ('email', 'contact', 'location', 'is_active', 'type')
+    list_display = ('email', 'name', 'contact', 'location', 'is_active')
     ordering = ('name',)
     fieldsets = (
-        (None, {'fields': ('email', 'name', 'contact', 'address', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'user_permissions')},),
+        (None, {'fields': ('email', 'name', 'contact', 'location', 'password')}),
+        ('Permissions', {'fields': ('is_active', 'user_permissions')},),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'name', 'contact', 'address', 'password1', 'password2', 'is_active', 'is_staff')}
+            'fields': ('email', 'name', 'contact', 'location', 'password1', 'password2', 'is_active')}
         ),
     )
     

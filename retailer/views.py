@@ -21,13 +21,19 @@ class RetailerView(APIView):
         password = request.data.get('password')
         name = request.data.get('name')
         contact = request.data.get('contact')
-        address = request.data.get('address') or "Address not provided"
+        location = request.data.get('address') or None
         
         if not email or not password or not name or not contact:
             raise NotFound(detail="Please provide all required fields")
         
+        def get_first_obj():
+            return Route.objects.first()
+        
         try:
-            retailer = Retailer.objects.create(email=email, name=name, contact=contact, address=address)
+            if location is None:
+                retailer = Retailer.objects.create(email=email, name=name, contact=contact, location=get_first_obj())
+            else:
+                retailer = Retailer.objects.create(email=email, name=name, contact=contact, location=location)
             retailer.set_password(password)
             retailer.save()
             serialized_retailer = ProfileSerializer(retailer)
@@ -64,12 +70,13 @@ class RetailerOrdersView(APIView):
         
         
     def post(self, request):
-        if (request.user.type != 'RETAILER'):
+        retailer = request.user
+        if (retailer.type != 'RETAILER'):
             raise NotFound(detail="User is not a retailer")
-        if not request.data['product'] or not request.data['route'] or not request.data['required']:
+        if not request.data['product'] or not request.data['required']:
             raise bad_request(detail="Please provide all required fields")
         product = Product.objects.get(pk=request.data.get('product'))
-        route = Route.objects.get(pk=request.data.get('route'))
+        route = retailer.location
         order = Orders.objects.filter(
             retailer=request.user,
             route=route,
@@ -96,8 +103,25 @@ class RetailerReceiptsView(APIView):
         if retailer.type != 'RETAILER':
             raise NotFound("User is not a retailer")
         try:
-            orders = OrdersAccepted.objects.filter(order__retailer=retailer)
+            orders = OrdersAccepted.objects.filter(order__retailer=retailer, accepted=True)
             serialized_orders = OrdersAcceptedSerializer(orders, many=True)
             return Response(serialized_orders.data)
         except Exception as e:
             raise NotFound("User not found")    
+        
+    def post(self, request):
+        if request.user.type != 'RETAILER':
+            raise NotFound("User is not a retailer")
+        product = request.data.get('product')
+        
+        orders = OrdersAccepted.objects.filter(order__product=product, accepted=True, order__retailer=request.user.id)
+        print(orders)
+
+        analysis_data = {
+            "totalDemand": sum([order.order.required for order in orders]),
+            "totalOrders": len(orders),
+            "totalPrice": sum([order.order.product.price for order in orders]),
+            "cost": orders[0].order.route.cost if len(orders) else 0,
+        }
+        
+        return Response(analysis_data) 

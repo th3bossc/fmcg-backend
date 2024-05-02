@@ -3,8 +3,19 @@ from django.contrib.auth.models import AbstractBaseUser , BaseUserManager, Permi
 
 # Create your models here.
 
+class Route(models.Model):
+    routeName=models.CharField(max_length=255)
+    text=models.TextField()
+    source=models.CharField(max_length=255)
+    destination=models.CharField(max_length=255)
+    cost=models.FloatField(default=30.0)
+    
+    
+    @property
+    def location(self):
+        return f"{self.source} -> {self.destination}" 
 class UserAccountManager(BaseUserManager): 
-    def create_user(self, email, name, contact, password, **other_fields): 
+    def create_user(self, email, name, contact, password, location, **other_fields): 
         if not email or len(email) <= 0 :  
             raise  ValueError("Email field is required !") 
         if not password : 
@@ -14,6 +25,7 @@ class UserAccountManager(BaseUserManager):
             email = self.normalize_email(email),
             name = name,
             contact = contact,
+            location = location,
             **other_fields  
         ) 
         user.set_password(password) 
@@ -36,21 +48,16 @@ class UserAccountManager(BaseUserManager):
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-    
     class Types(models.TextChoices):
         RETAILER = 'RETAILER', 'Retailer'
         DISTRIBUTOR = 'DISTRIBUTOR', 'Distributor'
     
-    type = models.CharField(max_length=12   , choices=Types.choices, default=Types.RETAILER)
+    type = models.CharField(max_length=12, choices=Types.choices, default=Types.RETAILER)
     
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     contact = models.CharField(max_length=10)
-    address = models.TextField()
-    # orders
-    # notifications
-    # inventory
-    # live_demand 
+    location = models.ForeignKey(to='user.Route', on_delete=models.DO_NOTHING, null=True) 
     
     is_active = models.BooleanField(default = True) 
     is_admin = models.BooleanField(default = False) 
@@ -89,17 +96,7 @@ class Notification(models.Model):
         ordering = ['-day']
         
 
-class Route(models.Model):
-    routeName=models.CharField(max_length=255)
-    text=models.TextField()
-    source=models.CharField(max_length=255)
-    destination=models.CharField(max_length=255)
-    cost=models.FloatField(default=30.0)
-    
-    
-    @property
-    def location(self):
-        return f"{self.source} -> {self.destination}" 
+
     
     
 class Product(models.Model):
