@@ -15,7 +15,7 @@ class Route(models.Model):
     def location(self):
         return f"{self.source} -> {self.destination}" 
 class UserAccountManager(BaseUserManager): 
-    def create_user(self, email, name, contact, password, location, **other_fields): 
+    def create_user(self, email, name, contact, password, **other_fields): 
         if not email or len(email) <= 0 :  
             raise  ValueError("Email field is required !") 
         if not password : 
@@ -25,7 +25,7 @@ class UserAccountManager(BaseUserManager):
             email = self.normalize_email(email),
             name = name,
             contact = contact,
-            location = location,
+            location = None,
             **other_fields  
         ) 
         user.set_password(password) 
@@ -57,7 +57,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     contact = models.CharField(max_length=10)
-    location = models.ForeignKey(to='user.Route', on_delete=models.DO_NOTHING, null=True) 
+    location = models.ForeignKey(to='user.Route', on_delete=models.DO_NOTHING, null=True, blank=True) 
     
     is_active = models.BooleanField(default = True) 
     is_admin = models.BooleanField(default = False) 

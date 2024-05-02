@@ -105,11 +105,12 @@ class AcceptHandler(APIView):
             newOrder.save()
             
             orderedBy = order.retailer
-            Notification.objects.create(user=orderedBy, message=f"Your order has been accepted by {distributor.name}")
-            Notification.objects.create(user=orderedBy, message=f"Lead time for delivery is {days} days")
+            Notification.objects.create(user=orderedBy, title=f"Your order has been accepted by {distributor.name}", day=datetime.now())
+            Notification.objects.create(user=orderedBy, title=f"Lead time for delivery is {days} days", day=datetime.now())
             
             return Response({"message": "Order accepted"})
         except Exception as e:
+            print(e)
             raise NotFound("Order not found")
         
         
@@ -124,7 +125,7 @@ class RejectHandler(APIView):
             newOrder = OrdersAccepted.objects.create(order=order, distributor=distributor, accepted=False)
             newOrder.save()
             retailer = order.retailer
-            Notification.objects.create(user=retailer, message=f"Your order has been rejected by {distributor.name}")
+            Notification.objects.create(user=retailer, title=f"Your order has been rejected by {distributor.name}", day=datetime.now())
             
             return Response({"message": "Order rejected"})
         except Exception as e:

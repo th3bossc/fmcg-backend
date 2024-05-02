@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import UserAccount, Notification, Route, Product
 from .serializers import ProfileSerializer, NotificationsSerializer, RoutesSerializer, ProductSerializer
+import random
 # Create your views here.
 
 class ProfileView(APIView):
@@ -39,6 +40,7 @@ class ProductsView(APIView):
     
     def post(self, request):
         product = ProductSerializer(data=request.data)
+        product.demand = random.randint(10, 999)
         if product.is_valid():
             product.save()
             return Response(product.data)

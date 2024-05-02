@@ -6,18 +6,18 @@ from django.contrib.admin import ModelAdmin
 
 class UserAdminConfig(UserAdmin):
     model = UserAccount
-    search_fields = ('email', 'name', 'contact')
-    list_filter = ('email', 'contact', 'is_active', 'is_staff', 'type')
-    list_display = ('email', 'name', 'contact', 'is_active', 'is_staff', 'type')
+    search_fields = ('email', 'name', 'contact', 'location')
+    list_filter = ('email', 'contact', 'location', 'is_active', 'is_staff', 'type')
+    list_display = ('email', 'name', 'contact', 'location', 'is_active', 'is_staff', 'type')
     ordering = ('name',)
     fieldsets = (
-        (None, {'fields': ('email', 'name', 'contact', 'address', 'password', 'type')}),
+        (None, {'fields': ('email', 'name', 'contact', 'location', 'password', 'type')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'user_permissions')},),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'name', 'contact', 'address', 'password1', 'password2', 'is_active', 'is_staff', 'type')}
+            'fields': ('email', 'name', 'contact', 'location', 'password1', 'password2', 'is_active', 'is_staff', 'type')}
         ),
     )
 

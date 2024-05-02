@@ -1,7 +1,7 @@
 from django.db import models
 from user.models import UserAccount, Route
 class RetailerManager(models.Manager): 
-    def create_user(self, email, name, contact, password, **other_fields): 
+    def create_user(self, email, name, contact, location, password, **other_fields): 
         if not email or len(email) <= 0:  
             raise  ValueError("Email field is required !") 
         if not password : 
@@ -11,6 +11,7 @@ class RetailerManager(models.Manager):
             email = self.normalize_email(email),
             name = name,
             contact = contact,
+            location = location,
             **other_fields  
         ) 
         user.set_password(password) 
